@@ -2,7 +2,9 @@ package com.example.demo;
 
 import com.example.demo.controller.TestController;
 import com.example.demo.model.TestDto;
+import com.example.demo.model.TestXmlDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.tomakehurst.wiremock.common.Json;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,15 +14,24 @@ import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDoc
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Marshaller;
+import javax.xml.datatype.DatatypeConstants;
+
+import java.io.FileDescriptor;
+import java.io.StringWriter;
+
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -52,48 +63,27 @@ public class ApiDocumentationJUnit5IntegrationTest {
 
     }
 
-    @Test
-    public void testWithJsonPayload() throws Exception {
-        TestDto payload = new TestDto(2L, "Test title", "Test body");
-        this.mockMvc.perform(post("/test/json")
-                        .contentType(MediaType.APPLICATION_JSON)
-                    .content(this.objectMapper.writeValueAsString(payload)))
-                .andExpect(status().isCreated())
-                .andDo(document("{method-name}",
-                        /*
-                        preprocessRequest(prettyPrint()),
-                        preprocessResponse(prettyPrint()),
-                         */
-                        requestFields(
-                                fieldWithPath("id").type(JsonFieldType.NUMBER).description("is id"),
-                                fieldWithPath("title").type(JsonFieldType.STRING).description("is title"),
-                                fieldWithPath("body").type(JsonFieldType.STRING).description("is body")
-                        ),
-                        responseFields(
-                                fieldWithPath("id").type(JsonFieldType.NUMBER).description("is id"),
-                                fieldWithPath("title").type(JsonFieldType.STRING).description("is title"),
-                                fieldWithPath("body").type(JsonFieldType.STRING).description("is body")
-                        )
-                ));
-    }
-
 //    @Test
-//    public void testWithXmlPayload() throws Exception {
-//        TestDto payload = new TestDto(2L, "Test title", "Test body");
-//        this.mockMvc.perform(post("/test/xml")
+//    public void testWithJsonPayload() throws Exception {
+//        TestDto jsonObject = new TestDto(2L, "Test title", "Test body");
+//        String jsonPayload = this.objectMapper.writeValueAsString(jsonObject);
+//        this.mockMvc.perform(post("/test/json")
 //                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(this.objectMapper.writeValueAsString(payload)))
+//                        .content(jsonPayload))
 //                .andExpect(status().isCreated())
 //                .andDo(document("{method-name}",
+//
 //                        /*
 //                        preprocessRequest(prettyPrint()),
 //                        preprocessResponse(prettyPrint()),
 //                         */
+//
 //                        requestFields(
 //                                fieldWithPath("id").type(JsonFieldType.NUMBER).description("is id"),
 //                                fieldWithPath("title").type(JsonFieldType.STRING).description("is title"),
 //                                fieldWithPath("body").type(JsonFieldType.STRING).description("is body")
 //                        ),
+//
 //                        responseFields(
 //                                fieldWithPath("id").type(JsonFieldType.NUMBER).description("is id"),
 //                                fieldWithPath("title").type(JsonFieldType.STRING).description("is title"),
@@ -102,7 +92,44 @@ public class ApiDocumentationJUnit5IntegrationTest {
 //                ));
 //    }
 
+    @Test
+    public void testWithXmlPayload() throws Exception {
 
+        TestXmlDto xmlObject = TestXmlDto.builder()
+                .parameters("Testing_parameters")
+                .dataset("Testing_dataset")
+                .build();
+
+        StringWriter stringWriter = new StringWriter();
+        JAXBContext context = JAXBContext.newInstance(TestXmlDto.class);
+        Marshaller marshaller = context.createMarshaller();
+        /*
+        mar.setProperty(Marshaller.JAXB_FRAGMENT, true);
+        mar.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+         */
+        marshaller.marshal(xmlObject, stringWriter);
+        String xmlPayload = stringWriter.toString();
+
+        this.mockMvc.perform(post("/test/xml")
+                        .contentType(MediaType.APPLICATION_XML)
+                        .content(xmlPayload))
+                .andExpect(status().isCreated())
+                .andDo(document("{method-name}",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        requestFields(
+                                subsectionWithPath("Root").type(JsonFieldType.OBJECT).description("Root section"),
+                                fieldWithPath("Root/Parameters").type(JsonFieldType.STRING).description("is param"),
+                                fieldWithPath("Root/Dataset").type(JsonFieldType.STRING).description("is dataset")
+                        ),
+                        responseFields(
+                                fieldWithPath("Root").type(JsonFieldType.STRING).description("is root"),
+                                fieldWithPath("Root/Parameters").type(JsonFieldType.STRING).description("is param"),
+                                fieldWithPath("Root/Dataset").type(JsonFieldType.STRING).description("is dataset")
+                        )
+                ));
+    }
+}
 
     /*
         this.mockMvc.perform(get("/"))
@@ -162,4 +189,3 @@ public class ApiDocumentationJUnit5IntegrationTest {
     }
 
      */
-}
