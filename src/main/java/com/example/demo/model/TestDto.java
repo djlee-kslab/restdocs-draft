@@ -15,21 +15,16 @@ import java.util.List;
 public class TestDto {
 
     @NotNull
-    private final long id;
-
+    private final   long    id;
     @NotBlank
-    private final String title;
-
-    private final String body;
+    private final   String  title;
+    private final   String  body;
 
     @JsonCreator
-    public TestDto(
-
-            @JsonProperty("id")     long    id,
-            @JsonProperty("title")  String  title,
-            @JsonProperty("body")   String  body
+    public TestDto(     @JsonProperty("id")     long    id,
+                        @JsonProperty("title")  String  title,
+                        @JsonProperty("body")   String  body
     ) {
-
         this.id     = id;
         this.title  = title;
         this.body   = body;

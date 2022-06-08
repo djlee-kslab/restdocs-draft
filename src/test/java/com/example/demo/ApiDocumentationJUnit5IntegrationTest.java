@@ -1,6 +1,6 @@
 package com.example.demo;
 
-import com.example.demo.controller.IndexController;
+import com.example.demo.controller.TestController;
 import com.example.demo.model.TestDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,16 +30,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class ApiDocumentationJUnit5IntegrationTest {
 
     @InjectMocks
-    private IndexController indexController;
+    private TestController testController;
 
     @Spy
     private ObjectMapper objectMapper;
 
     private MockMvc mockMvc;
 
+
     @BeforeEach
     public void setUp(RestDocumentationContextProvider restDocumentation) {
-        this.mockMvc = MockMvcBuilders.standaloneSetup(indexController)
+        this.mockMvc = MockMvcBuilders.standaloneSetup(testController)
                 .addFilter(new CharacterEncodingFilter("UTF-8", true))
                 .apply(documentationConfiguration(restDocumentation))
                 .alwaysDo(document(
@@ -53,21 +54,22 @@ public class ApiDocumentationJUnit5IntegrationTest {
     @Test
     public void indexExample() throws Exception {
         TestDto payload = new TestDto(2L, "Test title", "Test body");
-
         this.mockMvc.perform(post("/test")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(this.objectMapper.writeValueAsString(objectMapper.writeValueAsString(payload))))
-                .andExpect(status().is4xxClientError())
+                        .contentType(MediaType.APPLICATION_XML)
+                    .content(this.objectMapper.writeValueAsString(payload)))
+                .andExpect(status().isCreated())
                 .andDo(document("{method-name}",
-//                        preprocessRequest(prettyPrint()),
-//                        preprocessResponse(prettyPrint()),
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
                         requestFields(
                                 fieldWithPath("id").type(JsonFieldType.NUMBER).description("is id"),
                                 fieldWithPath("title").type(JsonFieldType.STRING).description("is title"),
                                 fieldWithPath("body").type(JsonFieldType.STRING).description("is body")
                         ),
                         responseFields(
-                                fieldWithPath("body")
+                                fieldWithPath("id").type(JsonFieldType.NUMBER).description("is id"),
+                                fieldWithPath("title").type(JsonFieldType.STRING).description("is title"),
+                                fieldWithPath("body").type(JsonFieldType.STRING).description("is body")
                         )
                 ));
     }
