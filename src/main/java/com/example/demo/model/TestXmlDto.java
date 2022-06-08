@@ -16,7 +16,7 @@ import java.util.List;
 public class TestXmlDto {
 
     @XmlElementWrapper(name = "Parameters")
-//    @XmlElement(name = "Parameters")
+    @XmlElement(name = "Parameter")
     private List<Parameter> parameters;
 
     @XmlElement(name = "Dataset")
