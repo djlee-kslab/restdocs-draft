@@ -65,34 +65,34 @@ public class ApiDocumentationJUnit5IntegrationTest {
 
     }
 
-//    @Test
-//    public void testWithJsonPayload() throws Exception {
-//        TestDto jsonObject = new TestDto(2L, "Test title", "Test body");
-//        String jsonPayload = this.objectMapper.writeValueAsString(jsonObject);
-//        this.mockMvc.perform(post("/test/json")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(jsonPayload))
-//                .andExpect(status().isCreated())
-//                .andDo(document("{method-name}",
-//
-//                        /*
+    /*
+    @Test
+    public void testWithJsonPayload() throws Exception {
+        TestDto jsonObject = new TestDto(2L, "Test title", "Test body");
+        String jsonPayload = this.objectMapper.writeValueAsString(jsonObject);
+        this.mockMvc.perform(post("/test/json")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonPayload))
+                .andExpect(status().isCreated())
+                .andDo(document("{method-name}",
+
 //                        preprocessRequest(prettyPrint()),
 //                        preprocessResponse(prettyPrint()),
-//                         */
-//
-//                        requestFields(
-//                                fieldWithPath("id").type(JsonFieldType.NUMBER).description("is id"),
-//                                fieldWithPath("title").type(JsonFieldType.STRING).description("is title"),
-//                                fieldWithPath("body").type(JsonFieldType.STRING).description("is body")
-//                        ),
-//
-//                        responseFields(
-//                                fieldWithPath("id").type(JsonFieldType.NUMBER).description("is id"),
-//                                fieldWithPath("title").type(JsonFieldType.STRING).description("is title"),
-//                                fieldWithPath("body").type(JsonFieldType.STRING).description("is body")
-//                        )
-//                ));
-//    }
+
+                        requestFields(
+                                fieldWithPath("id").type(JsonFieldType.NUMBER).description("is id"),
+                                fieldWithPath("title").type(JsonFieldType.STRING).description("is title"),
+                                fieldWithPath("body").type(JsonFieldType.STRING).description("is body")
+                        ),
+
+                        responseFields(
+                                fieldWithPath("id").type(JsonFieldType.NUMBER).description("is id"),
+                                fieldWithPath("title").type(JsonFieldType.STRING).description("is title"),
+                                fieldWithPath("body").type(JsonFieldType.STRING).description("is body")
+                        )
+                ));
+    }
+     */
 
     @Test
     public void testWithXmlPayload() throws Exception {
