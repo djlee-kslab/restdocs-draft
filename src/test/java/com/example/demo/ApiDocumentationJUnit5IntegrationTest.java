@@ -27,6 +27,8 @@ import javax.xml.datatype.DatatypeConstants;
 
 import java.io.FileDescriptor;
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
@@ -95,18 +97,22 @@ public class ApiDocumentationJUnit5IntegrationTest {
     @Test
     public void testWithXmlPayload() throws Exception {
 
+        /* Stub 만드는 과정은 개선이 필요하다. */
+        List<TestXmlDto.Parameter> parameterList = new ArrayList<>();
+        parameterList.add(TestXmlDto.Parameter.builder()
+                .id("JSESSIONID")
+                .value("stub_jsessionid").build());
+        parameterList.add(TestXmlDto.Parameter.builder()
+                .id("_xm_webid_1_")
+                .value("stub_xm_webid").build());
         TestXmlDto xmlObject = TestXmlDto.builder()
-                .parameters("Testing_parameters")
+                .parameters(parameterList)
                 .dataset("Testing_dataset")
                 .build();
 
         StringWriter stringWriter = new StringWriter();
         JAXBContext context = JAXBContext.newInstance(TestXmlDto.class);
         Marshaller marshaller = context.createMarshaller();
-        /*
-        mar.setProperty(Marshaller.JAXB_FRAGMENT, true);
-        mar.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-         */
         marshaller.marshal(xmlObject, stringWriter);
         String xmlPayload = stringWriter.toString();
 
@@ -117,15 +123,13 @@ public class ApiDocumentationJUnit5IntegrationTest {
                 .andDo(document("{method-name}",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
-                        requestFields(
-                                subsectionWithPath("Root").type(JsonFieldType.OBJECT).description("Root section"),
-                                fieldWithPath("Root/Parameters").type(JsonFieldType.STRING).description("is param"),
-                                fieldWithPath("Root/Dataset").type(JsonFieldType.STRING).description("is dataset")
+                        relaxedRequestFields(
+                                subsectionWithPath("Root/Dataset").type(JsonFieldType.STRING).description("is dataset section")
                         ),
-                        responseFields(
-                                fieldWithPath("Root").type(JsonFieldType.STRING).description("is root"),
-                                fieldWithPath("Root/Parameters").type(JsonFieldType.STRING).description("is param"),
-                                fieldWithPath("Root/Dataset").type(JsonFieldType.STRING).description("is dataset")
+                        relaxedResponseFields(
+//                                fieldWithPath("Root").type(JsonFieldType.STRING).description("is root"),
+//                                fieldWithPath("Root/Parameters").type(JsonFieldType.STRING).description("is param"),
+                                fieldWithPath("Root/Dataset").type(JsonFieldType.STRING).description("실질적인 응답이 담겨있다.")
                         )
                 ));
     }
