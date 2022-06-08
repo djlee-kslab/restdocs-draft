@@ -1,10 +1,8 @@
 package com.example.demo;
 
 import com.example.demo.controller.TestController;
-import com.example.demo.model.TestDto;
 import com.example.demo.model.TestXmlDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.tomakehurst.wiremock.common.Json;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,7 +12,6 @@ import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDoc
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
-import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -23,9 +20,7 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
-import javax.xml.datatype.DatatypeConstants;
 
-import java.io.FileDescriptor;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
@@ -99,12 +94,8 @@ public class ApiDocumentationJUnit5IntegrationTest {
 
         /* Stub 만드는 과정은 개선이 필요하다. */
         List<TestXmlDto.Parameter> parameterList = new ArrayList<>();
-        parameterList.add(TestXmlDto.Parameter.builder()
-                .id("JSESSIONID")
-                .value("stub_jsessionid").build());
-        parameterList.add(TestXmlDto.Parameter.builder()
-                .id("_xm_webid_1_")
-                .value("stub_xm_webid").build());
+        parameterList.add(new TestXmlDto.Parameter("JSESSIONID", "stub_JSESSIONID"));
+        parameterList.add(new TestXmlDto.Parameter("_xm_webid_1_", "stub_xm_webid"));
         TestXmlDto xmlObject = TestXmlDto.builder()
                 .parameters(parameterList)
                 .dataset("Testing_dataset")
