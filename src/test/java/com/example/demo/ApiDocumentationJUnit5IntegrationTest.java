@@ -57,7 +57,6 @@ public class ApiDocumentationJUnit5IntegrationTest {
                         preprocessResponse(prettyPrint())
                 )).build();
          */
-
     }
 
     /*
@@ -112,14 +111,17 @@ public class ApiDocumentationJUnit5IntegrationTest {
                         .content(xmlPayload))
                 .andExpect(status().isCreated())
                 .andDo(document("{method-name}",
+
+                        /* docs의 표시할 sample을 보기 좋게 출력한다. */
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
+
+                        /* relaxed[Request/Response]Fields 를 사용한다. */
+                        // 까다롭게 필드를 검사할 수 없지만, xml 형식의 특성상 필요 없는 부분이 너무 많으므로 감수한다.
                         relaxedRequestFields(
                                 subsectionWithPath("Root/Dataset").type(JsonFieldType.STRING).description("is dataset section")
                         ),
                         relaxedResponseFields(
-//                                fieldWithPath("Root").type(JsonFieldType.STRING).description("is root"),
-//                                fieldWithPath("Root/Parameters").type(JsonFieldType.STRING).description("is param"),
                                 fieldWithPath("Root/Dataset").type(JsonFieldType.STRING).description("실질적인 응답이 담겨있다.")
                         )
                 ));
