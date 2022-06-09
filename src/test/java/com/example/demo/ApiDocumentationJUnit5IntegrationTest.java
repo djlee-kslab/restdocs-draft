@@ -175,7 +175,9 @@ public class ApiDocumentationJUnit5IntegrationTest {
                         // 까다롭게 필드를 검사할 수 없지만, xml 형식의 특성상 문서화할 필요 없는 공통부분이 너무 많으므로 감수한다.
                         // Field를 검사+문서화 하지 않을 뿐, sample payload는 .content(xmlPayload)를 기반으로 빌드하므로 영향 없다.
                         relaxedRequestFields(
-                                subsectionWithPath("Root/Dataset").type(JsonFieldType.STRING).description("is dataset section")
+                                fieldWithPath("Root/Dataset[@id=\"gds_userInfo\"]") .type(JsonFieldType.OBJECT) .description("센터의 정보를 포함한 Dataset"),
+
+                                fieldWithPath("Root/Dataset[@id=\"ds_cond\"]")      .type(JsonFieldType.OBJECT) .description("요청의 condition을 포함한 Dataset")
                         ),
 
                         /*
