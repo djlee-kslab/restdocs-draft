@@ -19,11 +19,13 @@ public class TestXmlDto {
 
     @XmlElement(name = "Dataset")
     private String dataset;
-//
-//    public TestXmlDto(List<Parameter> parameters, String dataset) {
-//        this.parameters = parameters;
-//        this.dataset = dataset;
-//    }
+
+    /*
+    public TestXmlDto(List<Parameter> parameters, String dataset) {
+        this.parameters = parameters;
+        this.dataset = dataset;
+    }
+     */// Unmarshalling이 잘 되지 않는 경우 직접 작성해줘야 할 수도 있다.
 
     @Builder
     @NoArgsConstructor
@@ -40,10 +42,13 @@ public class TestXmlDto {
         @NonNull
         @XmlValue
         private String value;
-//
-//        public Parameter(String id, String value) {
-//            this.id = id;
-//            this.value = value;
-//        }
+
+        /*
+        public Parameter(String id, String value) {
+            this.id = id;
+            this.value = value;
+        }
+
+         */// Unmarshalling이 잘 되지 않는 경우 직접 작성해줘야 할 수도 있다. (2)
     }
 }
