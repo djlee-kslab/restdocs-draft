@@ -99,6 +99,16 @@ public class ApiDocumentationJUnit5IntegrationTest {
         List<TestXmlDto.Dataset> datasetList = new ArrayList<>();
         datasetList.add(new TestXmlDto.Dataset("id1", "value1"));
         datasetList.add(new TestXmlDto.Dataset("id2", "value2"));
+         *///콜렉션으로 사용해야 할 이유를 찾지 못해 final init 방식으로 대체, Unmarshalling에 문제 없으면 이대로 간다.
+        TestXmlDto.Parameter[] parameterList = {
+                new TestXmlDto.Parameter("JSESSIONID", "stub_JSESSIONID"),
+                new TestXmlDto.Parameter("_xm_webid_1_", "stub_xm_webid"),
+        };
+
+        TestXmlDto.Dataset[] datasetList = {
+                new TestXmlDto.Dataset("id1", "value1"),
+                new TestXmlDto.Dataset("id2", "value2"),
+        };
 
         TestXmlDto xmlObject = TestXmlDto.builder()
                 .parameters(parameterList)
