@@ -9,8 +9,12 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @XmlRootElement(name = "Root")
+//@XmlRootElement(name = "Root", namespace = "http://www.nexacroplatform.com/platform/dataset")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class TestXmlDto {
+
+    @XmlAttribute
+    private String xmlns;
 
     @NonNull
     @XmlElementWrapper(name = "Parameters")
@@ -18,7 +22,7 @@ public class TestXmlDto {
     private Parameter[] parameters;
 
     @XmlElement(name = "Dataset")
-    private Dataset[] dataset;
+    private Dataset[] datasets;
 
     /*
     public TestXmlDto(List<Parameter> parameters, String dataset) {
