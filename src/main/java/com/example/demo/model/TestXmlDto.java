@@ -15,10 +15,10 @@ public class TestXmlDto {
     @NonNull
     @XmlElementWrapper(name = "Parameters")
     @XmlElement(name = "Parameter")
-    private List<Parameter> parameters;
+    private Parameter[] parameters;
 
     @XmlElement(name = "Dataset")
-    private List<Dataset> dataset;
+    private Dataset[] dataset;
 
     /*
     public TestXmlDto(List<Parameter> parameters, String dataset) {
