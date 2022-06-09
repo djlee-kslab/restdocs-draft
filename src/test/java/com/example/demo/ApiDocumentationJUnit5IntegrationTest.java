@@ -23,6 +23,7 @@ import javax.xml.bind.Marshaller;
 
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -92,6 +93,7 @@ public class ApiDocumentationJUnit5IntegrationTest {
     public void testWithXmlPayload() throws Exception {
 
         /* Stub 만드는 과정은 개선이 필요하다. */
+        /*
         List<TestXmlDto.Parameter> parameterList = new ArrayList<>();
         parameterList.add(new TestXmlDto.Parameter("JSESSIONID", "stub_JSESSIONID"));
         parameterList.add(new TestXmlDto.Parameter("_xm_webid_1_", "stub_xm_webid"));
@@ -123,7 +125,8 @@ public class ApiDocumentationJUnit5IntegrationTest {
 
         this.mockMvc.perform(post("/test/xml")
                         .contentType(MediaType.APPLICATION_XML)
-                        .content(xmlPayload))
+                        .content(xmlPayload)
+                        .accept(MediaType.APPLICATION_XML))
                 .andExpect(status().isCreated())
                 .andDo(document("{method-name}",
 
@@ -139,9 +142,18 @@ public class ApiDocumentationJUnit5IntegrationTest {
 //                        relaxedRequestPartFields(
 //                                "part", subsectionWithPath("Root/Dataset").type(JsonFieldType.STRING).description("is dataset section")
 //                        ),
+//                        relaxedRequestFields(beneathPath("Root/Dataset"),
+//                                subsectionWithPath("Root/Dataset").type(JsonFieldType.STRING).description("is dataset section")
+//                        ),
                         relaxedRequestFields(
                                 subsectionWithPath("Root/Dataset").type(JsonFieldType.STRING).description("is dataset section")
                         ),
+//                        requestFields(
+//                                beneathPath("Root/Dataset"),
+////                                subsectionWithPath("Root/Dataset[1]").type(JsonFieldType.STRING).description("is dataset section")
+////                                subsectionWithPath("//*").type(JsonFieldType.STRING).description("is dataset section")
+//
+//                        ),
                         relaxedResponseFields(
                                 fieldWithPath("Root/Dataset").type(JsonFieldType.STRING).description("실질적인 응답이 담겨있다.")
                         )
