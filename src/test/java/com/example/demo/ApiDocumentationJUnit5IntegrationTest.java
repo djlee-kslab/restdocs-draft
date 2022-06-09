@@ -95,9 +95,14 @@ public class ApiDocumentationJUnit5IntegrationTest {
         List<TestXmlDto.Parameter> parameterList = new ArrayList<>();
         parameterList.add(new TestXmlDto.Parameter("JSESSIONID", "stub_JSESSIONID"));
         parameterList.add(new TestXmlDto.Parameter("_xm_webid_1_", "stub_xm_webid"));
+
+        List<TestXmlDto.Dataset> datasetList = new ArrayList<>();
+        datasetList.add(new TestXmlDto.Dataset("id1", "value1"));
+        datasetList.add(new TestXmlDto.Dataset("id2", "value2"));
+
         TestXmlDto xmlObject = TestXmlDto.builder()
                 .parameters(parameterList)
-                .dataset("Testing_dataset")
+                .dataset(datasetList)
                 .build();
 
         StringWriter stringWriter = new StringWriter();
@@ -119,6 +124,11 @@ public class ApiDocumentationJUnit5IntegrationTest {
                         /* relaxed[Request/Response]Fields 를 사용한다. */
                         // 까다롭게 필드를 검사할 수 없지만, xml 형식의 특성상 문서화할 필요 없는 공통부분이 너무 많으므로 감수한다.
                         // Field를 검사+문서화 하지 않을 뿐, sample payload는 .content(xmlPayload)를 기반으로 빌드하므로 영향 없다.
+
+                        // + @재민님-advice; relaxed 내에서 특정 부분만 빡빡하게 검사할 수 있는지 찾아보기
+//                        relaxedRequestPartFields(
+//                                "part", subsectionWithPath("Root/Dataset").type(JsonFieldType.STRING).description("is dataset section")
+//                        ),
                         relaxedRequestFields(
                                 subsectionWithPath("Root/Dataset").type(JsonFieldType.STRING).description("is dataset section")
                         ),

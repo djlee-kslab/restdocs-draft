@@ -18,7 +18,7 @@ public class TestXmlDto {
     private List<Parameter> parameters;
 
     @XmlElement(name = "Dataset")
-    private String dataset;
+    private List<Dataset> dataset;
 
     /*
     public TestXmlDto(List<Parameter> parameters, String dataset) {
@@ -33,6 +33,31 @@ public class TestXmlDto {
     @XmlRootElement(name = "Parameter")
     @XmlAccessorType(XmlAccessType.FIELD)
     public static class Parameter {
+
+        //    @Length(min = 2, message = "너무 짧소")
+        @NonNull
+        @XmlAttribute(name = "id")
+        private String id;
+
+        @NonNull
+        @XmlValue
+        private String value;
+
+        /*
+        public Parameter(String id, String value) {
+            this.id = id;
+            this.value = value;
+        }
+
+         */// Unmarshalling이 잘 되지 않는 경우 직접 작성해줘야 할 수도 있다. (2)
+    }
+
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @XmlRootElement(name = "Dataset")
+    @XmlAccessorType(XmlAccessType.FIELD)
+    public static class Dataset {
 
         //    @Length(min = 2, message = "너무 짧소")
         @NonNull
