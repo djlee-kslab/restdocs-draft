@@ -54,20 +54,25 @@ public class ApiDocumentationJUnit5IntegrationTest {
         String xmlPayload = stringWriter.toString();
 
         //TODO:[2] xml 풀버전 지원하도록
-        this.mockMvc.perform(
-                post("/test/xml")
-                        .content(xmlPayload)
-                        .contentType(MediaType.APPLICATION_XML)
-                        .accept(MediaType.APPLICATION_XML)
+        this.mockMvc.perform(post("/test/xml")
+                        .content(xmlPayload)                                                // RequestBody(payload)
+                        .contentType(MediaType.APPLICATION_XML)                             // Request  타입
+                        .accept(MediaType.APPLICATION_XML)                                  // Response 타입
                 )
-                .andExpect(status().isCreated())
-                .andDo(document("{class-name}/{method-name}",
+                .andExpect(status().isOk())                                                 // 상태코드 201을 리턴
+                .andDo(document("{class-name}/{method-name}",                   // 클래스명/메서드명 내에 docs 생성
                         preprocessRequest(prettyPrint()),
-                        preprocessResponse(prettyPrint()),
-                        relaxedRequestFields(
-                                subsectionWithPath("Root/Dataset[@id=\"gds_userInfo\"]").type(JsonFieldType.OBJECT).description("센터정보"),
-                                fieldWithPath("Root/Dataset[@id=\"ds_cond\"]").type(JsonFieldType.OBJECT).description("요청의 condition을 포함한 Dataset")
+                        preprocessResponse(prettyPrint()),                                  // 요청/응답을 보기 좋게 docs화
+                        /* Request 문서화 */
+                        relaxedRequestFields(                                               // Xml은 verbose하기 때문
+                                subsectionWithPath("Root/Dataset[@id=\"gds_userInfo\"]")    // Section에 대한
+                                        .type(JsonFieldType.OBJECT)                         // 타입과 설명
+                                        .description("센터정보"),                             // Section은 이하에 대한 검증X
+                                fieldWithPath("Root/Dataset[@id=\"ds_cond\"]")              // Field에 대한
+                                        .type(JsonFieldType.OBJECT)                         // 타입과 설명
+                                        .description("요청의 condition을 포함한 Dataset")       // Field는 이하에 대한 검증O
                         ),
+                        /* Response 문서화 */
                         relaxedResponseFields(
                                 fieldWithPath("Root/Dataset").type(JsonFieldType.STRING).description("실질적인 응답이 담겨있다.")
                         )
