@@ -21,6 +21,7 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -61,23 +62,81 @@ public class ApiDocumentationJUnit5IntegrationTest {
     }
 
 
+//    @Test
+//    public void testWithXmlPayload() throws Exception {
+//
+//        /* Stub 만드는 과정은 개선이 필요하다. */
+//        /*
+//        List<TestXmlDto.Parameter> parameterList = new ArrayList<>();
+//        parameterList.add(new TestXmlDto.Parameter("JSESSIONID", "stub_JSESSIONID"));
+//        parameterList.add(new TestXmlDto.Parameter("_xm_webid_1_", "stub_xm_webid"));
+//
+//        List<TestXmlDto.Dataset> datasetList = new ArrayList<>();
+//        datasetList.add(new TestXmlDto.Dataset("id1", "value1"));
+//        datasetList.add(new TestXmlDto.Dataset("id2", "value2"));
+//         *///콜렉션으로 사용해야 할 이유를 찾지 못해 final init 방식으로 대체, Unmarshalling에 문제 없으면 이대로 간다.
+//
+//        TestXmlDto.Parameter[] parameterList = {
+//                TestXmlDto.Parameter.builder()
+//                        .id("id1")
+//                        .value("value1")
+//                        .build(),
+//                TestXmlDto.Parameter.builder()
+//                        .id("id2")
+//                        .value("value2")
+//                        .build()
+//        };
+//
+//        TestXmlDto.Dataset[] datasetList = {
+//                new TestXmlDto.Dataset("id1", "value1"),
+//                new TestXmlDto.Dataset("id2", "value2"),
+//        };
+//
+//        TestXmlDto xmlObject = TestXmlDto.builder()
+//                .parameters(parameterList)
+//                .dataset(datasetList)
+//                .build();
+//
+//        StringWriter stringWriter = new StringWriter();
+//        JAXBContext context = JAXBContext.newInstance(TestXmlDto.class);
+//        Marshaller marshaller = context.createMarshaller();
+//        marshaller.marshal(xmlObject, stringWriter);
+//        String xmlPayload = stringWriter.toString();
+//
+//        this.mockMvc.perform(post("/test/xml")
+//                        .contentType(MediaType.APPLICATION_XML)
+//                        .content(xmlPayload)
+//                        .accept(MediaType.APPLICATION_XML))
+//                .andExpect(status().isCreated())
+//                .andDo(document("{method-name}",
+//                        /* docs의 표시할 sample을 보기 좋게 처리한다. */
 //                        preprocessRequest(prettyPrint()),
 //                        preprocessResponse(prettyPrint()),
-
-                        requestFields(
-                                fieldWithPath("id").type(JsonFieldType.NUMBER).description("is id"),
-                                fieldWithPath("title").type(JsonFieldType.STRING).description("is title"),
-                                fieldWithPath("body").type(JsonFieldType.STRING).description("is body")
-                        ),
-
-                        responseFields(
-                                fieldWithPath("id").type(JsonFieldType.NUMBER).description("is id"),
-                                fieldWithPath("title").type(JsonFieldType.STRING).description("is title"),
-                                fieldWithPath("body").type(JsonFieldType.STRING).description("is body")
-                        )
-                ));
-    }
-     */
+//                        /* relaxed[Request/Response]Fields 를 사용한다. */
+//                        // 까다롭게 필드를 검사할 수 없지만, xml 형식의 특성상 문서화할 필요 없는 공통부분이 너무 많으므로 감수한다.
+//                        // Field를 검사+문서화 하지 않을 뿐, sample payload는 .content(xmlPayload)를 기반으로 빌드하므로 영향 없다.
+//                        relaxedRequestFields(
+//                                subsectionWithPath("Root/Dataset").type(JsonFieldType.STRING).description("is dataset section")
+//                        ),
+//                        /*
+//                        relaxedRequestPartFields(
+//                                "part", subsectionWithPath("Root/Dataset").type(JsonFieldType.STRING).description("is dataset section")
+//                        ),
+//                        relaxedRequestFields(beneathPath("Root/Dataset"),
+//                                subsectionWithPath("Root/Dataset").type(JsonFieldType.STRING).description("is dataset section")
+//                        ),
+//                        requestFields(
+//                                beneathPath("Root/Dataset"),
+////                                subsectionWithPath("Root/Dataset[1]").type(JsonFieldType.STRING).description("is dataset section")
+////                                subsectionWithPath("//*").type(JsonFieldType.STRING).description("is dataset section")
+//
+//                        ),
+//                         */// + @재민님 advice; relaxed 내에서 특정 부분만 빡빡하게 검사할 수 있는지 찾아보려는 시도 above
+//                        relaxedResponseFields(
+//                                fieldWithPath("Root/Dataset").type(JsonFieldType.STRING).description("실질적인 응답이 담겨있다.")
+//                        )
+//                ));
+//    }
 
     @Test
     public void testWithXmlPayload() throws Exception {
