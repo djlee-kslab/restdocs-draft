@@ -18,12 +18,12 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 @Controller
 @RequestMapping("/test")
 public class TestController {
-
-    @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping("/json")
-    public ResponseEntity<TestDto> saveByJson(@RequestBody @Valid TestDto jsonPayload) {
-        return new ResponseEntity<TestDto>(jsonPayload, HttpStatus.CREATED);
-    }
+//
+//    @ResponseStatus(HttpStatus.CREATED)
+//    @PostMapping("/json")
+//    public ResponseEntity<TestDto> saveByJson(@RequestBody @Valid TestDto jsonPayload) {
+//        return new ResponseEntity<TestDto>(jsonPayload, HttpStatus.CREATED);
+//    }
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/xml")
