@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Root xmlns="http://www.nexacroplatform.com/platform/dataset">
+    <Parameters>
+        <Parameter id="JSESSIONID">jId</Parameter>
+        <Parameter id="_xm_webid_1_">wId</Parameter>
+        <Parameter id="NetFunnel_ID" />
+        <Parameter id="ahnlabFlag">Y</Parameter>
+        <Parameter id="_xm_tid_1_">tId</Parameter>
+    </Parameters>
+    <Dataset id="gds_userInfo">
+        <ColumnInfo>
+            <Column id="YKIHO" type="string" size="32" />
+            <Column id="ADMIN_PTTN_CD_NM" type="string" size="32" />
+            <Column id="TODAY" type="string" size="32" />
+            <Column id="LTC_MGMT_NO" type="string" size="32" />
+            <Column id="BRCH_CD" type="string" size="32" />
+            <Column id="CRTF_SERIAL" type="string" size="32" />
+            <Column id="SERVER_NAME" type="string" size="32" />
+            <Column id="ADMIN_PTTN_CD" type="string" size="32" />
+            <Column id="USER_NM" type="string" size="32" />
+            <Column id="ADMIN_SYM" type="string" size="32" />
+            <Column id="RESULT" type="string" size="32" />
+            <Column id="NM_ID" type="string" size="32" />
+            <Column id="YOYANG_KIND_CD" type="string" size="32" />
+            <Column id="HIPIN" type="string" size="32" />
+            <Column id="PSTN_TYPE" type="string" size="32" />
+            <Column id="AGE" type="string" size="32" />
+            <Column id="USER_ID" type="string" size="32" />
+            <Column id="USER_TYPE_NM" type="string" size="32" />
+            <Column id="CMMB_TYPE_CD" type="string" size="32" />
+            <Column id="BDAY" type="string" size="32" />
+            <Column id="CEN_TYPE" type="string" size="32" />
+            <Column id="ADMIN_KIND_CD" type="string" size="32" />
+            <Column id="LTC_ADMIN_SYM" type="string" size="32" />
+            <Column id="USER_TYPE" type="string" size="32" />
+            <Column id="QLF_TYPE" type="string" size="32" />
+            <Column id="SERVER_IP" type="string" size="32" />
+            <Column id="BRCH_NM" type="string" size="32" />
+            <Column id="USER_IP" type="string" size="32" />
+            <Column id="CON_TYPE" type="string" size="32" />
+            <Column id="ADMIN_KIND_CD_NM" type="string" size="32" />
+            <Column id="USER_AUTH" type="string" size="32" />
+            <Column id="YOYANG_STAT_CD" type="string" size="32" />
+            <Column id="EGGR_NM" type="string" size="32" />
+            <Column id="PAYMT_VLT_CLSFC_TYPE_CD" type="string" size="32" />
+            <Column id="_ROW_STATUS" type="string" size="32" />
+        </ColumnInfo>kk
+        <Rows>
+            <Row>
+                <Col id="ADMIN_PTTN_CD_NM">재가노인복지시설&#32;방문요양</Col>
+                <Col id="TODAY">20220509</Col>
+                <Col id="BRCH_CD">0126</Col>
+                <Col id="CRTF_SERIAL">06148cd8</Col>
+                <Col id="SERVER_NAME">npbs_opr_new42</Col>
+                <Col id="ADMIN_PTTN_CD">B01</Col>
+                <Col id="USER_NM">스마일시니어성동방문요양센터</Col>
+                <Col id="ADMIN_SYM">21120000177</Col>
+                <Col id="RESULT">success</Col>
+                <Col id="NM_ID">21120000177</Col>
+                <Col id="PSTN_TYPE">0</Col>
+                <Col id="USER_ID">kslab5931</Col>
+                <Col id="USER_TYPE_NM">장기요양기관</Col>
+                <Col id="CEN_TYPE">01</Col>
+                <Col id="ADMIN_KIND_CD">B</Col>
+                <Col id="LTC_ADMIN_SYM">21120000177</Col>
+                <Col id="USER_TYPE">20A</Col>
+                <Col id="SERVER_IP">*</Col>
+                <Col id="BRCH_NM">성동지사</Col>
+                <Col id="USER_IP">112.217.122.250</Col>
+                <Col id="CON_TYPE">U</Col>
+                <Col id="ADMIN_KIND_CD_NM">재가노인복지시설</Col>
+                <Col id="USER_AUTH">22A</Col>
+                <Col id="PAYMT_VLT_CLSFC_TYPE_CD">04</Col>
+                <Col id="_ROW_STATUS">1</Col>
+            </Row>
+        </Rows>
+    </Dataset>
+    <Dataset id="ds_cond">
+        <ColumnInfo>
+            <Column id="LTCO_MGMT_SYM" type="STRING" size="256" />
+            <Column id="LTC_ADMIN_SYM" type="STRING" size="256" />
+            <Column id="EXM_RECV_NO" type="STRING" size="256" />
+            <Column id="LTCP_OFFR_YYYYMM" type="STRING" size="256" />
+            <Column id="LTCP_OFFR_YYYYMM_FR" type="STRING" size="256" />
+            <Column id="LTCP_OFFR_YYYYMM_TO" type="STRING" size="256" />
+            <Column id="LTCP_CLSFC_CD" type="STRING" size="256" />
+            <Column id="LTCP_DMD_TYPE_CD" type="STRING" size="256" />
+            <Column id="SEARCH_COND" type="STRING" size="256" />
+            <Column id="LTCP_DMD_STAT_CD" type="STRING" size="256" />
+            <Column id="LTCP_TO_DT" type="STRING" size="256" />
+            <Column id="DMD_MDM_TYPE_CD" type="STRING" size="256" />
+            <Column id="LTC_MGMT_NO" type="STRING" size="256" />
+            <Column id="SEARCH_TYPE" type="STRING" size="256" />
+            <Column id="ADMIN_PTTN_CD" type="STRING" size="256" />
+            <Column id="HOT_KEY_YN" type="STRING" size="256" />
+        </ColumnInfo>
+        <Rows>
+            <Row>
+                <Col id="LTC_ADMIN_SYM">21120000177</Col>
+                <Col id="LTCP_OFFR_YYYYMM">202204</Col>
+                <Col id="SEARCH_TYPE" />
+            </Row>
+        </Rows>
+    </Dataset>
+</Root>
