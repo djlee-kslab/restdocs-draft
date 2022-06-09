@@ -20,12 +20,9 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.io.*;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
@@ -138,26 +135,80 @@ public class ApiDocumentationJUnit5IntegrationTest {
 //                ));
 //    }
 
+//    @Test
+//    public void testWithXmlStringPayload() throws Exception {
+//
+//        String xmlString = """
+//                <?xml version="1.0" encoding="UTF-8"?>
+//                <Root>
+//                    <Parameters>
+//                        <Parameter id="id1">value1</Parameter>
+//                        <Parameter id="id2">value2</Parameter>
+//                    </Parameters>
+//                    <Dataset id="id1">value1</Dataset>
+//                    <Dataset id="id2">value2</Dataset>
+//                </Root>""";
+//
+//        JAXBContext context = JAXBContext.newInstance(TestXmlDto.class);
+//        TestXmlDto xmlObject =  (TestXmlDto) context.createUnmarshaller().unmarshal(new StringReader(xmlString));
+//
+//        StringWriter stringWriter = new StringWriter();
+//        Marshaller marshaller = context.createMarshaller();
+//        marshaller.marshal(xmlObject, stringWriter);
+//        String xmlPayload = stringWriter.toString();
+//
+//        this.mockMvc.perform(post("/test/xml")
+//                        .contentType(MediaType.APPLICATION_XML)
+//                        .content(xmlPayload)
+//                        .accept(MediaType.APPLICATION_XML))
+//                .andExpect(status().isCreated())
+//                .andDo(document("{method-name}",
+//
+//                        /* docs의 표시할 sample을 보기 좋게 처리한다. */
+//                        preprocessRequest(prettyPrint()),
+//                        preprocessResponse(prettyPrint()),
+//
+//                        /* relaxed[Request/Response]Fields 를 사용한다. */
+//                        // 까다롭게 필드를 검사할 수 없지만, xml 형식의 특성상 문서화할 필요 없는 공통부분이 너무 많으므로 감수한다.
+//                        // Field를 검사+문서화 하지 않을 뿐, sample payload는 .content(xmlPayload)를 기반으로 빌드하므로 영향 없다.
+//                        relaxedRequestFields(
+//                                fieldWithPath("Root/Dataset[@id=\"gds_userInfo\"]") .type(JsonFieldType.OBJECT) .description("센터의 정보를 포함한 Dataset"),
+//
+//                                fieldWithPath("Root/Dataset[@id=\"ds_cond\"]")      .type(JsonFieldType.OBJECT) .description("요청의 condition을 포함한 Dataset")
+//                        ),
+//
+//                        /*
+//                        relaxedRequestPartFields(
+//                                "part", subsectionWithPath("Root/Dataset").type(JsonFieldType.STRING).description("is dataset section")
+//                        ),
+//                        relaxedRequestFields(beneathPath("Root/Dataset"),
+//                                subsectionWithPath("Root/Dataset").type(JsonFieldType.STRING).description("is dataset section")
+//                        ),
+//                        requestFields(
+//                                beneathPath("Root/Dataset"),
+////                                subsectionWithPath("Root/Dataset[1]").type(JsonFieldType.STRING).description("is dataset section")
+////                                subsectionWithPath("//*").type(JsonFieldType.STRING).description("is dataset section")
+//
+//                        ),
+//                         */// + @재민님-advice; relaxed 내에서 특정 부분만 빡빡하게 검사할 수 있는지 찾아보려는 시도 above
+//
+//                        relaxedResponseFields(
+//                                fieldWithPath("Root/Dataset").type(JsonFieldType.STRING).description("실질적인 응답이 담겨있다.")
+//                        )
+//                ));
+//    }
+
     @Test
-    public void testWithXmlStringPayload() throws Exception {
-
-        String xmlString = """
-                <?xml version="1.0" encoding="UTF-8"?>
-                <Root>
-                    <Parameters>
-                        <Parameter id="id1">value1</Parameter>
-                        <Parameter id="id2">value2</Parameter>
-                    </Parameters>
-                    <Dataset id="id1">value1</Dataset>
-                    <Dataset id="id2">value2</Dataset>
-                </Root>""";
-
-        JAXBContext context = JAXBContext.newInstance(TestXmlDto.class);
-        TestXmlDto xmlObject =  (TestXmlDto) context.createUnmarshaller().unmarshal(new StringReader(xmlString));
+    public void testWithXmlFilePayload() throws Exception {
 
         StringWriter stringWriter = new StringWriter();
-        Marshaller marshaller = context.createMarshaller();
-        marshaller.marshal(xmlObject, stringWriter);
+        JAXBContext context = JAXBContext.newInstance(TestXmlDto.class);
+        InputStream xmlFile = new FileInputStream("src/test/resources/selectAdminPttnCd.xml");
+        TestXmlDto xmlObject =  (TestXmlDto) context.createUnmarshaller().unmarshal(xmlFile);
+
+        //FIXME: 꼭 Object로 바꾸고 marshal 해야하나?
+        // - Validation 땜시?
+        context.createMarshaller().marshal(xmlObject, stringWriter);
         String xmlPayload = stringWriter.toString();
 
         this.mockMvc.perform(post("/test/xml")
@@ -171,29 +222,10 @@ public class ApiDocumentationJUnit5IntegrationTest {
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
 
-                        /* relaxed[Request/Response]Fields 를 사용한다. */
-                        // 까다롭게 필드를 검사할 수 없지만, xml 형식의 특성상 문서화할 필요 없는 공통부분이 너무 많으므로 감수한다.
-                        // Field를 검사+문서화 하지 않을 뿐, sample payload는 .content(xmlPayload)를 기반으로 빌드하므로 영향 없다.
                         relaxedRequestFields(
                                 fieldWithPath("Root/Dataset[@id=\"gds_userInfo\"]") .type(JsonFieldType.OBJECT) .description("센터의 정보를 포함한 Dataset"),
-
                                 fieldWithPath("Root/Dataset[@id=\"ds_cond\"]")      .type(JsonFieldType.OBJECT) .description("요청의 condition을 포함한 Dataset")
                         ),
-
-                        /*
-                        relaxedRequestPartFields(
-                                "part", subsectionWithPath("Root/Dataset").type(JsonFieldType.STRING).description("is dataset section")
-                        ),
-                        relaxedRequestFields(beneathPath("Root/Dataset"),
-                                subsectionWithPath("Root/Dataset").type(JsonFieldType.STRING).description("is dataset section")
-                        ),
-                        requestFields(
-                                beneathPath("Root/Dataset"),
-//                                subsectionWithPath("Root/Dataset[1]").type(JsonFieldType.STRING).description("is dataset section")
-//                                subsectionWithPath("//*").type(JsonFieldType.STRING).description("is dataset section")
-
-                        ),
-                         */// + @재민님-advice; relaxed 내에서 특정 부분만 빡빡하게 검사할 수 있는지 찾아보려는 시도 above
 
                         relaxedResponseFields(
                                 fieldWithPath("Root/Dataset").type(JsonFieldType.STRING).description("실질적인 응답이 담겨있다.")
