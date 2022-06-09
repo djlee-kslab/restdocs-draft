@@ -139,35 +139,23 @@ public class ApiDocumentationJUnit5IntegrationTest {
 //    }
 
     @Test
-    public void testWithXmlPayload() throws Exception {
+    public void testWithXmlStringPayload() throws Exception {
 
-        /* Stub 만드는 과정은 개선이 필요하다. */
-        /*
-        List<TestXmlDto.Parameter> parameterList = new ArrayList<>();
-        parameterList.add(new TestXmlDto.Parameter("JSESSIONID", "stub_JSESSIONID"));
-        parameterList.add(new TestXmlDto.Parameter("_xm_webid_1_", "stub_xm_webid"));
+        String xmlString = """
+                <?xml version="1.0" encoding="UTF-8"?>
+                <Root>
+                    <Parameters>
+                        <Parameter id="id1">value1</Parameter>
+                        <Parameter id="id2">value2</Parameter>
+                    </Parameters>
+                    <Dataset id="id1">value1</Dataset>
+                    <Dataset id="id2">value2</Dataset>
+                </Root>""";
 
-        List<TestXmlDto.Dataset> datasetList = new ArrayList<>();
-        datasetList.add(new TestXmlDto.Dataset("id1", "value1"));
-        datasetList.add(new TestXmlDto.Dataset("id2", "value2"));
-         *///콜렉션으로 사용해야 할 이유를 찾지 못해 final init 방식으로 대체, Unmarshalling에 문제 없으면 이대로 간다.
-        TestXmlDto.Parameter[] parameterList = {
-                new TestXmlDto.Parameter("JSESSIONID", "stub_JSESSIONID"),
-                new TestXmlDto.Parameter("_xm_webid_1_", "stub_xm_webid"),
-        };
-
-        TestXmlDto.Dataset[] datasetList = {
-                new TestXmlDto.Dataset("id1", "value1"),
-                new TestXmlDto.Dataset("id2", "value2"),
-        };
-
-        TestXmlDto xmlObject = TestXmlDto.builder()
-                .parameters(parameterList)
-                .dataset(datasetList)
-                .build();
+        JAXBContext context = JAXBContext.newInstance(TestXmlDto.class);
+        TestXmlDto xmlObject =  (TestXmlDto) context.createUnmarshaller().unmarshal(new StringReader(xmlString));
 
         StringWriter stringWriter = new StringWriter();
-        JAXBContext context = JAXBContext.newInstance(TestXmlDto.class);
         Marshaller marshaller = context.createMarshaller();
         marshaller.marshal(xmlObject, stringWriter);
         String xmlPayload = stringWriter.toString();
