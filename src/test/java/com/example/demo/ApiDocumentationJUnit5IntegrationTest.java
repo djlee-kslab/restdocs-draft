@@ -2,12 +2,10 @@ package com.example.demo;
 
 import com.example.demo.controller.TestController;
 import com.example.demo.model.TestXmlDto;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.Spy;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.RestDocumentationContextProvider;
@@ -17,13 +15,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.filter.CharacterEncodingFilter;
-
 import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-
 import java.io.*;
-
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
@@ -38,27 +31,85 @@ public class ApiDocumentationJUnit5IntegrationTest {
     @InjectMocks
     private TestController testController;
 
-    @Spy
-    private ObjectMapper objectMapper;
-
     private MockMvc mockMvc;
-
 
     @BeforeEach
     public void setUp(RestDocumentationContextProvider restDocumentation) {
         this.mockMvc = MockMvcBuilders.standaloneSetup(testController)
                 .addFilter(new CharacterEncodingFilter("UTF-8", true))
                 .apply(documentationConfiguration(restDocumentation)).build();
-        /*
-                .alwaysDo(document(
-                        "{method-name}",
-                        preprocessRequest(prettyPrint()),
-                        preprocessResponse(prettyPrint())
-                )).build();
-         */
     }
 
+    @Test
+    public void testWithXmlFilePayload() throws Exception {
 
+        StringWriter stringWriter = new StringWriter();
+        JAXBContext context = JAXBContext.newInstance(TestXmlDto.class);
+        InputStream xmlFile = new FileInputStream("src/test/resources/selectAdminPttnCd.xml");
+        TestXmlDto xmlObject =  (TestXmlDto) context.createUnmarshaller().unmarshal(xmlFile);
+
+        //TODO:[1] 꼭 Object로 바꾸고 marshal 해야하나?
+        // Validation 땜시?
+        context.createMarshaller().marshal(xmlObject, stringWriter);
+        String xmlPayload = stringWriter.toString();
+
+        //TODO:[2] xml 풀버전 지원하도록
+        this.mockMvc.perform(
+                post("/test/xml")
+                        .content(xmlPayload)
+                        .contentType(MediaType.APPLICATION_XML)
+                        .accept(MediaType.APPLICATION_XML)
+                )
+                .andExpect(status().isCreated())
+                .andDo(document("{class-name}/{method-name}",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        relaxedRequestFields(
+                                subsectionWithPath("Root/Dataset[@id=\"gds_userInfo\"]").type(JsonFieldType.OBJECT).description("센터정보"),
+                                fieldWithPath("Root/Dataset[@id=\"ds_cond\"]").type(JsonFieldType.OBJECT).description("요청의 condition을 포함한 Dataset")
+                        ),
+                        relaxedResponseFields(
+                                fieldWithPath("Root/Dataset").type(JsonFieldType.STRING).description("실질적인 응답이 담겨있다.")
+                        )
+                ));
+    }
+}
+
+    /*
+        this.mockMvc.perform(get("/"))
+                .andExpect(status().isOk())
+                .andDo(document("index-example",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        links(
+                                linkWithRel("crud").description("The CRUD resource")
+                        ),
+                        responseFields(subsectionWithPath("_links").description("Links to other resources")),
+                        responseHeaders(headerWithName("Content-Type").description("The Content-Type of the payload, e.g. `application/hal+json`"))
+                ));
+    }
+
+        this.mockMvc.perform(post("/crud")
+                        .contentType(MediaTypes.HAL_JSON)
+                        .content(this.objectMapper.writeValueAsString(crud)))
+                .andExpect(status().isCreated())
+                .andDo(document("crud-create-example",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        requestFields(
+                                fieldWithPath("id").description("The id of the input"),
+                                fieldWithPath("title").description("The title of the input"),
+                                fieldWithPath("body").description("The body of the input"),
+                                fieldWithPath("tags").description("An array of tag resource URIs")
+                        )
+                ));
+     */
+
+//                .alwaysDo(document(
+//                        "{class-name}/{method-name}",
+//                        preprocessRequest(prettyPrint()),
+//                        preprocessResponse(prettyPrint())
+//                )).build();
 //    @Test
 //    public void testWithXmlPayload() throws Exception {
 //
@@ -197,72 +248,6 @@ public class ApiDocumentationJUnit5IntegrationTest {
 //                        )
 //                ));
 //    }
-
-    @Test
-    public void testWithXmlFilePayload() throws Exception {
-
-        StringWriter stringWriter = new StringWriter();
-        JAXBContext context = JAXBContext.newInstance(TestXmlDto.class);
-        InputStream xmlFile = new FileInputStream("src/test/resources/selectAdminPttnCd.xml");
-        TestXmlDto xmlObject =  (TestXmlDto) context.createUnmarshaller().unmarshal(xmlFile);
-
-        //FIXME: 꼭 Object로 바꾸고 marshal 해야하나?
-        // - Validation 땜시?
-        context.createMarshaller().marshal(xmlObject, stringWriter);
-        String xmlPayload = stringWriter.toString();
-
-        this.mockMvc.perform(post("/test/xml")
-                        .contentType(MediaType.APPLICATION_XML)
-                        .content(xmlPayload)
-                        .accept(MediaType.APPLICATION_XML))
-                .andExpect(status().isCreated())
-                .andDo(document("{method-name}",
-
-                        /* docs의 표시할 sample을 보기 좋게 처리한다. */
-                        preprocessRequest(prettyPrint()),
-                        preprocessResponse(prettyPrint()),
-
-                        relaxedRequestFields(
-                                fieldWithPath("Root/Dataset[@id=\"gds_userInfo\"]") .type(JsonFieldType.OBJECT) .description("센터의 정보를 포함한 Dataset"),
-                                fieldWithPath("Root/Dataset[@id=\"ds_cond\"]")      .type(JsonFieldType.OBJECT) .description("요청의 condition을 포함한 Dataset")
-                        ),
-
-                        relaxedResponseFields(
-                                fieldWithPath("Root/Dataset").type(JsonFieldType.STRING).description("실질적인 응답이 담겨있다.")
-                        )
-                ));
-    }
-}
-
-    /*
-        this.mockMvc.perform(get("/"))
-                .andExpect(status().isOk())
-                .andDo(document("index-example",
-                        preprocessRequest(prettyPrint()),
-                        preprocessResponse(prettyPrint()),
-                        links(
-                                linkWithRel("crud").description("The CRUD resource")
-                        ),
-                        responseFields(subsectionWithPath("_links").description("Links to other resources")),
-                        responseHeaders(headerWithName("Content-Type").description("The Content-Type of the payload, e.g. `application/hal+json`"))
-                ));
-    }
-
-        this.mockMvc.perform(post("/crud")
-                        .contentType(MediaTypes.HAL_JSON)
-                        .content(this.objectMapper.writeValueAsString(crud)))
-                .andExpect(status().isCreated())
-                .andDo(document("crud-create-example",
-                        preprocessRequest(prettyPrint()),
-                        preprocessResponse(prettyPrint()),
-                        requestFields(
-                                fieldWithPath("id").description("The id of the input"),
-                                fieldWithPath("title").description("The title of the input"),
-                                fieldWithPath("body").description("The body of the input"),
-                                fieldWithPath("tags").description("An array of tag resource URIs")
-                        )
-                ));
-     */
 
     /*
     @Test
