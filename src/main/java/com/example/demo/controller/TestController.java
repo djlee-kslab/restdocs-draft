@@ -28,6 +28,6 @@ public class TestController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/xml")
     public ResponseEntity<TestXmlDto> saveByXml(@RequestBody @Valid TestXmlDto xmlPayload) {
-        return new ResponseEntity<TestXmlDto>(xmlPayload, HttpStatus.CREATED);
+        return new ResponseEntity<TestXmlDto>(xmlPayload, HttpStatus.OK);
     }
 }
