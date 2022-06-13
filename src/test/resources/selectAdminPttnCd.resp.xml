@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Root>
+    <Parameters>
+        <Parameter id="JSESSIONID">jId-resp</Parameter>
+        <Parameter id="_xm_webid_1_">wId-resp</Parameter>
+        <Parameter id="NetFunnel_ID" />
+        <Parameter id="ahnlabFlag">Y-resp</Parameter>
+        <Parameter id="_xm_tid_1_">tId-resp</Parameter>
+    </Parameters>
+    <Dataset id="gds_userInfo" />
+    <Dataset id="ds_cond" />
+</Root>
