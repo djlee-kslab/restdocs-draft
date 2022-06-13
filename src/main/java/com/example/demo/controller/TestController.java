@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import com.example.demo.model.CrudInput;
 import com.example.demo.model.TestDto;
 import com.example.demo.model.TestXmlDto;
+import com.example.demo.service.TestService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,9 +26,12 @@ public class TestController {
 //        return new ResponseEntity<TestDto>(jsonPayload, HttpStatus.CREATED);
 //    }
 
+    TestService testService;
+
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/xml")
     public ResponseEntity<TestXmlDto> saveByXml(@RequestBody @Valid TestXmlDto xmlPayload) {
-        return new ResponseEntity<TestXmlDto>(xmlPayload, HttpStatus.OK);
+        TestXmlDto result = testService.testMethod(xmlPayload);
+        return new ResponseEntity<TestXmlDto>(result, HttpStatus.OK);
     }
 }
