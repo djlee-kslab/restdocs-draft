@@ -11,7 +11,8 @@ import javax.validation.Valid;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
-@Controller
+@Validated
+@RestController
 @RequestMapping("/test")
 public class TestController {
 
