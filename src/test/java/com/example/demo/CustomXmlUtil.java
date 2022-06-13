@@ -16,4 +16,16 @@ public class CustomXmlUtil {
 
         return (tClass.cast(context.createUnmarshaller().unmarshal(fileInputStream)));
     }
+
+    //TODO: 꼭 Object로 바꾸고 marshal 해야하나?
+    public static <T> String getXmlStringFromFile(Class<T> tClass, String filePath) throws JAXBException, FileNotFoundException {
+
+        StringWriter stringWriter = new StringWriter();
+        JAXBContext context = JAXBContext.newInstance(tClass);
+        InputStream fileInputStream = new FileInputStream(filePath);
+        T xmlObject = (tClass.cast(context.createUnmarshaller().unmarshal(fileInputStream)));
+        context.createMarshaller().marshal(xmlObject, stringWriter);
+
+        return stringWriter.toString();
+    }
 }
