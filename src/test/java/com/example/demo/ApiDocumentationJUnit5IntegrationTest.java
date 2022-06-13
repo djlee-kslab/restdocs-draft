@@ -2,6 +2,7 @@ package com.example.demo;
 
 import com.example.demo.controller.TestController;
 import com.example.demo.model.TestXmlDto;
+import com.example.demo.service.TestService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,56 +34,78 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureRestDocs
 public class ApiDocumentationJUnit5IntegrationTest {
 
+    @Mock
+    private TestService testService;
+
     @InjectMocks
     private TestController testController;
 
     private MockMvc mockMvc;
 
     @BeforeEach
-    public void setUp(RestDocumentationContextProvider restDocumentation) {
+    public void setUp(RestDocumentationContextProvider restDocumentation) throws JAXBException, FileNotFoundException {
+
+        String respXmlFilePath = "src/test/resources/selectAdminPttnCd.resp.xml";
+        TestXmlDto respObjectXml = CustomXmlUtil.getXmlObjectFromFile(TestXmlDto.class, respXmlFilePath);
+
+        Mockito.when(testService.testMethod(any()))
+                .thenReturn(respObjectXml);
+
         this.mockMvc = MockMvcBuilders.standaloneSetup(testController)
                 .addFilter(new CharacterEncodingFilter("UTF-8", true))
-                .apply(documentationConfiguration(restDocumentation)).build();
+                .apply(documentationConfiguration(restDocumentation)).build(); // custom할 수 있다.
     }
 
     @Test
     public void testWithXmlFilePayload() throws Exception {
 
-        StringWriter stringWriter = new StringWriter();
-        JAXBContext context = JAXBContext.newInstance(TestXmlDto.class);
-        InputStream xmlFile = new FileInputStream("src/test/resources/selectAdminPttnCd.xml");
-        TestXmlDto xmlObject =  (TestXmlDto) context.createUnmarshaller().unmarshal(xmlFile);
-
-        //TODO:[1] 꼭 Object로 바꾸고 marshal 해야하나?
-        // Validation 땜시?
-        context.createMarshaller().marshal(xmlObject, stringWriter);
-        String xmlPayload = stringWriter.toString();
+        String reqXmlFilePath = "src/test/resources/selectAdminPttnCd.xml";
+        String reqXmlString = CustomXmlUtil.getXmlStringFromFile(TestXmlDto.class, reqXmlFilePath);
 
         //TODO:[2] xml 풀버전 지원하도록
-        this.mockMvc.perform(post("/test/xml")
-                        .content(xmlPayload)                                                // RequestBody(payload)
+        this.mockMvc.perform(post("/test")
+                        .content(reqXmlString)                                              // RequestBody(payload)
                         .contentType(MediaType.APPLICATION_XML)                             // Request  타입
                         .accept(MediaType.APPLICATION_XML)                                  // Response 타입
                 )
                 .andExpect(status().isOk())                                                 // 상태코드 201을 리턴
-                .andDo(document("{class-name}/{method-name}",                   // 클래스명/메서드명 내에 docs 생성
+                .andDo(document("{class-name}/{method-name}",                   // docs 생성 repo 정의
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),                                  // 요청/응답을 보기 좋게 docs화
                         /* Request 문서화 */
                         relaxedRequestFields(                                               // Xml은 verbose하기 때문
+                                subsectionWithPath("Root/Parameters")
+                                        .type(JsonFieldType.OBJECT)
+                                        .description("쿠키 관련 정보"),
                                 subsectionWithPath("Root/Dataset[@id=\"gds_userInfo\"]")    // Section에 대한
                                         .type(JsonFieldType.OBJECT)                         // 타입과 설명
-                                        .description("센터정보"),                             // Section은 이하에 대한 검증X
+                                        .description("센터 관련 정보"),                        // Section은 이하에 대한 검증X
                                 fieldWithPath("Root/Dataset[@id=\"ds_cond\"]")              // Field에 대한
                                         .type(JsonFieldType.OBJECT)                         // 타입과 설명
                                         .description("요청의 condition을 포함한 Dataset")       // Field는 이하에 대한 검증O
                         ),
                         /* Response 문서화 */
                         relaxedResponseFields(
-                                fieldWithPath("Root/Dataset").type(JsonFieldType.STRING).description("실질적인 응답이 담겨있다.")
+                                fieldWithPath("Root/Dataset").type(JsonFieldType.STRING).description("실질적인 응답")
                         )
                 ));
     }
+
+//    private TestService testServiceStub() throws JAXBException, FileNotFoundException {
+////        StringWriter stringWriter = new StringWriter();
+//        //FIXME: response용으로 바꿔야함.
+//        JAXBContext context = JAXBContext.newInstance(TestXmlDto.class);
+//        InputStream fileInputStream = new FileInputStream("src/test/resources/selectAdminPttnCd.resp.xml");
+//        TestXmlDto responseObjectXml =  (TestXmlDto) context.createUnmarshaller().unmarshal(fileInputStream);
+////        context.createMarshaller().marshal(responseObjectXml, stringWriter);
+////        String responseStringXml = stringWriter.toString();
+//
+//        TestService mockService = mock(TestService.class);
+//        when(mockService.testMethod(any())).thenReturn(responseObjectXml);
+//        return mockService;
+//    }
+
+
 }
 
     /*
